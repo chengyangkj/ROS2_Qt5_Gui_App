@@ -28,6 +28,8 @@ void roboItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
    drawLaserScan(painter);
    drawPath(painter);
    drawTools(painter);
+   drawLocalCostMap(painter);
+   drawGlobalCostMap(painter);
 }
 void roboItem::drawPath(QPainter* painter){
      painter->setPen(QPen(QColor(0,0,255),1));
@@ -85,6 +87,37 @@ void roboItem::drawTools(QPainter* painter){
       }
     }
 }
+void roboItem::drawGlobalCostMap(QPainter *painter) {
+  //显示方法1 直接绘制图片
+  painter->save();
+  painter->drawImage(0, 0, m_GlobalCostMap);
+  painter->restore();
+}
+void roboItem::drawLocalCostMap(QPainter *painter) {
+  //显示方法1 直接绘制图片
+  painter->save();
+  painter->translate(m_lastLocalCostMapRobotPose.x,
+                     m_lastLocalCostMapRobotPose.y);
+  painter->drawImage(
+      -m_LocalCostMap.width()/2, -m_LocalCostMap.height()/2,
+      m_LocalCostMap);
+  painter->restore();
+  //显示方法2 绘制点
+  //        painter->save();
+  //        painter->translate(m_currRobotPose.x, m_currRobotPose.y);
+  //        for(int x=0;x<m_LocalCostMap.width();x++){
+  //            for(int y=0;y<m_LocalCostMap.height();y++){
+  //              QColor color =  m_LocalCostMap.pixelColor(x,y);
+  //              int r,g,b,a;
+  //              color.getRgb(&r,&g,&b,&a);
+  //              if(color==Qt::transparent) continue;
+  //              painter->setPen(QPen(color,1));
+  //              painter->drawPoint(-m_LocalCostMap.width() /
+  //              2+x,-m_LocalCostMap.height() / 2+y);
+  //            }
+  //        }
+  //        painter->restore();
+}
 void roboItem::drawMap(QPainter* painter){
     painter->drawImage(0,0,m_map);
 }
@@ -104,6 +137,10 @@ void roboItem::updateRobotPose(RobotPose pose){
     m_currRobotPose=pose;
     update();
 }
+void roboItem::updateGlobalCostMap(QImage img) {
+  m_GlobalCostMap = img;
+  update();
+}
 void roboItem::updatePoints(QPolygonF points){
     m_points=points;
     update();
@@ -111,6 +148,11 @@ void roboItem::updatePoints(QPolygonF points){
 void roboItem::updateImage(QImage img){
     m_images=img;
     update();
+}
+void roboItem::updateLocalCostMap(QImage img) {
+  m_LocalCostMap = img;
+  m_lastLocalCostMapRobotPose = m_currRobotPose;
+  update();
 }
 void roboItem::updateMap(QImage img){
     m_map=img;

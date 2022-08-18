@@ -27,6 +27,9 @@ public:
 private:
     void recv_callback(const std_msgs::msg::Int32::SharedPtr msg);
     void map_callback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    void localCostMapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    void globalCostMapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+
     void laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     void path_callback(const nav_msgs::msg::Path::SharedPtr msg);
     QImage rotateMapWithY(QImage map);
@@ -40,6 +43,8 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr _navPosePublisher;
     rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr _subscription;
     rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr _map_sub;
+    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr m_localCostMapSub;
+    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr m_globalCostMapSub;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr _laser_sub;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr _path_sub;
     std::unique_ptr<tf2_ros::Buffer> m_tf_buffer;
@@ -54,6 +59,8 @@ private:
 signals:
     void emitTopicData(QString);
     void emitUpdateMap(QImage img);
+    void emitUpdateLocalCostMap(QImage img);
+    void emitUpdateGlobalCostMap(QImage img);
     void emitUpdateRobotPose(RobotPose pose);
     void emitUpdateLaserPoint(QPolygonF points);
     void emitUpdatePath(QPolygonF points);

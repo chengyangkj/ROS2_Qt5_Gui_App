@@ -19,6 +19,15 @@ rclcomm::rclcomm()
     _publisher = node->create_publisher<std_msgs::msg::Int32>("ros2_qt_dmeo_publish",10);
     _subscription = node->create_subscription<std_msgs::msg::Int32>("ros2_qt_dmeo_publish",10,std::bind(&rclcomm::recv_callback,this,std::placeholders::_1),sub1_obt);
     _map_sub = node->create_subscription<nav_msgs::msg::OccupancyGrid>("/map",rclcpp::QoS(rclcpp::KeepLast(1)).reliable().transient_local(),std::bind(&rclcomm::map_callback,this,std::placeholders::_1),sub1_obt);
+    m_localCostMapSub = node->create_subscription<nav_msgs::msg::OccupancyGrid>("/local_costmap/costmap",
+        rclcpp::QoS(rclcpp::KeepLast(1)).reliable().transient_local(),
+        std::bind(&rclcomm::localCostMapCallback, this, std::placeholders::_1),
+        sub1_obt);
+    m_globalCostMapSub = node->create_subscription<nav_msgs::msg::OccupancyGrid>(
+        "/global_costmap/costmap",
+        rclcpp::QoS(rclcpp::KeepLast(1)).reliable().transient_local(),
+        std::bind(&rclcomm::globalCostMapCallback, this, std::placeholders::_1),
+        sub1_obt);
     _laser_sub = node->create_subscription<sensor_msgs::msg::LaserScan>("/scan",20,std::bind(&rclcomm::laser_callback,this,std::placeholders::_1),sub_laser_obt);
     _path_sub =node->create_subscription<nav_msgs::msg::Path>("/plan",20,std::bind(&rclcomm::path_callback,this,std::placeholders::_1),sub1_obt);
     m_tf_buffer=std::make_unique<tf2_ros::Buffer>(node->get_clock());
@@ -63,7 +72,7 @@ void rclcomm::run(){
      QImage res=map;
      for(int x=0;x<map.width();x++){
          for(int y=0;y<map.height();y++){
-             res.setPixelColor(x,map.height()-y-1,map.pixel(x,y));
+             res.setPixelColor(x,map.height()-y-1,map.pixelColor(x,y));
          }
      }
      return res;
@@ -130,6 +139,99 @@ void rclcomm::laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg){
         qDebug()<<"laser pose transform error:"<<ex.what();
     }
 
+}
+void rclcomm::globalCostMapCallback(
+    const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
+  int width = msg->info.width;
+  int height = msg->info.height;
+  double origin_x = msg->info.origin.position.x;
+  double origin_y = msg->info.origin.position.y;
+  QImage map_image(width, height, QImage::Format_ARGB32);
+  for (int i = 0; i < msg->data.size(); i++) {
+    int x = i % width;
+    int y = (int)i / width;
+    //计算像素值
+    QColor color;
+    int data = msg->data[i];
+    if (data >= 100) {
+      color.setRgb(0xff, 0x00, 0xff);
+      color.setAlpha(50);
+    } else if (data >= 90 && data < 100) {
+      color.setRgb(0x66, 0xff, 0xff);
+      color.setAlpha(50);
+    } else if (data >= 70 && data <= 90) {
+      color.setRgb(0xff, 0x00, 0x33);
+      color.setAlpha(50);
+    } else if (data >= 60 && data <= 70) {
+      color.setRgb(0xbe, 0x28, 0x1a);  // red
+      color.setAlpha(50);
+    } else if (data >= 50 && data < 60) {
+      color.setRgb(0xBE, 0x1F, 0x58);
+      color.setAlpha(50);
+    } else if (data >= 40 && data < 50) {
+      color.setRgb(0xBE, 0x25, 0x76);
+      color.setAlpha(50);
+    } else if (data >= 30 && data < 40) {
+      color.setRgb(0xBE, 0x2A, 0x99);
+      color.setAlpha(50);
+    } else if (data >= 20 && data < 30) {
+      color.setRgb(0xBE, 0x35, 0xB3);
+      color.setAlpha(50);
+    } else if (data >= 10 && data < 20) {
+      color.setRgb(0xB0, 0x3C, 0xbE);
+      color.setAlpha(50);
+    } else {
+      color = Qt::transparent;
+    }
+    map_image.setPixelColor(x, y, color);
+  }
+  //延y翻转地图 因为解析到的栅格地图的坐标系原点为左下角
+  //但是图元坐标系为左上角度
+  map_image = rotateMapWithY(map_image);
+  //      map_image.save("/home/chengyangkj/test.jpg");
+  emit emitUpdateGlobalCostMap(map_image);
+}
+void rclcomm::localCostMapCallback(
+    const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
+  int width = msg->info.width;
+  int height = msg->info.height;
+  double origin_x = msg->info.origin.position.x;
+  double origin_y = msg->info.origin.position.y;
+  QImage map_image(width, height, QImage::Format_ARGB32);
+  for (int i = 0; i < msg->data.size(); i++) {
+    int x = i % width;
+    int y = (int)i / width;
+    //计算像素值
+    QColor color;
+    int data = msg->data[i];
+    if (data >= 100) {
+      color.setRgb(0xff, 00, 0xff);
+    } else if (data >= 90 && data < 100) {
+      color.setRgb(0x66, 0xff, 0xff);
+    } else if (data >= 70 && data <= 90) {
+      color.setRgb(0xff, 0x00, 0x33);
+    } else if (data >= 60 && data <= 70) {
+      color.setRgb(0xbe, 0x28, 0x1a);  // red
+    } else if (data >= 50 && data < 60) {
+      color.setRgb(0xBE, 0x1F, 0x58);
+    } else if (data >= 40 && data < 50) {
+      color.setRgb(0xBE, 0x25, 0x76);
+    } else if (data >= 30 && data < 40) {
+      color.setRgb(0xBE, 0x2A, 0x99);
+    } else if (data >= 20 && data < 30) {
+      color.setRgb(0xBE, 0x35, 0xB3);
+    } else if (data >= 10 && data < 20) {
+      color.setRgb(0xB0, 0x3C, 0xbE);
+    } else {
+      color = Qt::transparent;
+    }
+    map_image.setPixelColor(x, y, color);
+  }
+  //延y翻转地图 因为解析到的栅格地图的坐标系原点为左下角
+  //但是图元坐标系为左上角度
+  map_image = rotateMapWithY(map_image);
+  //      map_image.save("/home/chengyangkj/test.jpg");
+  emit emitUpdateLocalCostMap(map_image);
 }
 void rclcomm::map_callback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg){
    double origin_x = msg->info.origin.position.x;

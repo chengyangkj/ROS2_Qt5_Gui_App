@@ -24,13 +24,17 @@ public:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 public slots:
       void updateMap(QImage img);
+      void updateLocalCostMap(QImage img);
       void updateRobotPose(RobotPose pose);
       void updateLaserPoints(QPolygonF points);
       void updatePath(QPolygonF points);
+      void updateGlobalCostMap(QImage img);
       void start2DPose();
       void start2DGoal();
 private:
     QImage m_images;
+    QImage m_LocalCostMap;
+    QImage m_GlobalCostMap;
     QImage m_map;
     QPixmap m_robotImg;
     QPolygonF m_points;
@@ -41,6 +45,7 @@ private:
     QPointF m_startPose;
     QPointF m_endPose;
     RobotPose m_currRobotPose;
+    RobotPose m_lastLocalCostMapRobotPose;
     QPolygonF m_laserPoints;
     QPolygonF m_pathPoints;
     QCursor *m_currCursor=nullptr;
@@ -52,6 +57,8 @@ private:
     void drawImage(QPainter* painter);
     void drawPoints(QPainter* painter);
     void drawMap(QPainter* painter);
+    void drawLocalCostMap(QPainter *painter);
+    void drawGlobalCostMap(QPainter *painter);
     void drawRobotPose(QPainter* painter);
     void drawLaserScan(QPainter* painter);
     void drawPath(QPainter* painter);
