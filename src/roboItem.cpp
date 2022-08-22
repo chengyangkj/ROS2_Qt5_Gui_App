@@ -24,7 +24,7 @@ void roboItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
    drawPoints(painter);
    drawLine(painter);
    drawMap(painter);
-   drawRobotPose(painter);
+//   drawRobotPose(painter);
    drawLaserScan(painter);
    drawPath(painter);
    drawTools(painter);

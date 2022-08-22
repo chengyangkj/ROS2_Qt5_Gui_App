@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "rclcomm.h"
 #include "roboItem.h"
+#include "roboImg.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -18,6 +19,7 @@ public:
     rclcomm *commNode;
 public slots:
     void onRecvData(QString);
+    void updateRobotPose(RobotPose pose);
 private slots:
     void on_pushButton_6_clicked();
 
@@ -40,5 +42,6 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *m_qGraphicScene=nullptr;
     roboItem* m_roboItem=nullptr;
+    roboImg *m_roboImg = nullptr;
 };
 #endif // MAINWINDOW_H
