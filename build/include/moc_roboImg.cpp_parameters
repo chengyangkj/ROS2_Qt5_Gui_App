@@ -1,0 +1,5 @@
+-I/home/chengyangkj/ros2_ws/src/ROS2_Qt5_Gui_App
+-I/home/chengyangkj/ros2_ws/src/ROS2_Qt5_Gui_App/build
+-o
+/home/chengyangkj/ros2_ws/src/ROS2_Qt5_Gui_App/build/include/moc_roboImg.cpp
+/home/chengyangkj/ros2_ws/src/ROS2_Qt5_Gui_App/include/roboImg.h
