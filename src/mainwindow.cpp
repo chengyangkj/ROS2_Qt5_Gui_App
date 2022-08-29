@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(commNode, SIGNAL(emitUpdateRobotPose(RobotPose)), this,SLOT(updateRobotPose(RobotPose)));
     connect(commNode,SIGNAL(emitUpdateLaserPoint(QPolygonF)),m_roboItem,SLOT(updateLaserPoints(QPolygonF)));
     connect(commNode,SIGNAL(emitUpdatePath(QPolygonF)),m_roboItem,SLOT(updatePath(QPolygonF)));
+    connect(commNode,SIGNAL(emitUpdateLocalPath(QPolygonF)),m_roboItem,SLOT(updateLocalPath(QPolygonF)));
 //    connect(commNode,&rclcomm::emitUpdateMap,[this](QImage img){
 //        m_roboItem->updateMap(img);
 //    });
@@ -93,4 +94,14 @@ void MainWindow::on_pushButton_5_clicked()
 void MainWindow::on_pushButton_6_clicked()
 {
       m_roboItem->start2DGoal();
+}
+
+void MainWindow::on_pushButton_7_clicked()
+{
+    QColor color;
+    int r=ui->lineEdit->text().toInt();
+    int g=ui->lineEdit_2->text().toInt();
+    int b=ui->lineEdit_3->text().toInt();
+    color.setRgb(r,g,b);
+    m_roboItem->updateLaserColor(color);
 }

@@ -27,6 +27,7 @@ void roboItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 //   drawRobotPose(painter);
    drawLaserScan(painter);
    drawPath(painter);
+   drawLocalPath(painter);
    drawTools(painter);
    drawLocalCostMap(painter);
    drawGlobalCostMap(painter);
@@ -35,9 +36,17 @@ void roboItem::drawPath(QPainter* painter){
      painter->setPen(QPen(QColor(0,0,255),1));
      painter->drawPoints(m_pathPoints);
 }
+void roboItem::drawLocalPath(QPainter* painter){
+    painter->setPen(QPen(QColor(0,255,0),1));
+    painter->drawPoints(m_localPathPoints);
+}
 void roboItem::drawLaserScan(QPainter* painter){
-     painter->setPen(QPen(QColor(255,0,0),1));
+     painter->setPen(QPen(m_laser_color,1));
      painter->drawPoints(m_laserPoints);
+}
+void roboItem::updateLaserColor(QColor color){
+    m_laser_color=color;
+    update();
 }
 void roboItem::drawRobotPose(QPainter* painter){
 
@@ -69,7 +78,13 @@ void roboItem::drawTools(QPainter* painter){
         //绘制直线
         QPointF startPoint, endPoint;
         startPoint = m_startPose;
-        endPoint =m_endPose;
+        double dy = sin(theta) * 40;
+        double dx = cos(theta) * 40;
+        if (m_endPose.x() - m_startPose.x() > 0) {
+               endPoint = QPointF(m_startPose.x() + dx, m_startPose.y() + dy);
+          } else {
+               endPoint = QPointF(m_startPose.x() - dx, m_startPose.y() - dy);
+         }
         QLineF line(startPoint, endPoint);
         painter->drawLine(line);
         float angle = atan2(endPoint.y()-startPoint.y(), endPoint.x()-startPoint.x()) + 3.1415926;//
@@ -169,6 +184,10 @@ void roboItem::updateLaserPoints(QPolygonF points){
 }
 void roboItem::updatePath(QPolygonF points){
     m_pathPoints=points;
+    update();
+}
+void roboItem::updateLocalPath(QPolygonF points){
+    m_localPathPoints=points;
     update();
 }
 void roboItem::wheelEvent(QGraphicsSceneWheelEvent *event) {

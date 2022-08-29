@@ -28,9 +28,11 @@ public slots:
       void updateRobotPose(RobotPose pose);
       void updateLaserPoints(QPolygonF points);
       void updatePath(QPolygonF points);
+      void updateLocalPath(QPolygonF points);
       void updateGlobalCostMap(QImage img);
       void start2DPose();
       void start2DGoal();
+      void updateLaserColor(QColor color);
 private:
     QImage m_images;
     QImage m_LocalCostMap;
@@ -48,10 +50,12 @@ private:
     RobotPose m_lastLocalCostMapRobotPose;
     QPolygonF m_laserPoints;
     QPolygonF m_pathPoints;
+    QPolygonF m_localPathPoints;
     QCursor *m_currCursor=nullptr;
     QCursor *m_moveCursor=nullptr;
     QCursor *m_set2DPoseCursor=nullptr;
     QCursor *m_set2DGoalCursor=nullptr;
+    QColor m_laser_color=QColor(255,0,0);
 private:
     void drawLine(QPainter* painter);
     void drawImage(QPainter* painter);
@@ -62,6 +66,7 @@ private:
     void drawRobotPose(QPainter* painter);
     void drawLaserScan(QPainter* painter);
     void drawPath(QPainter* painter);
+    void drawLocalPath(QPainter* painter);
     void drawTools(QPainter* painter);
 signals:
     void signalPub2DPose(QPointF,QPointF);

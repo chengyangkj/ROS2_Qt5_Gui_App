@@ -30,6 +30,7 @@ rclcomm::rclcomm()
         sub1_obt);
     _laser_sub = node->create_subscription<sensor_msgs::msg::LaserScan>("/scan",20,std::bind(&rclcomm::laser_callback,this,std::placeholders::_1),sub_laser_obt);
     _path_sub =node->create_subscription<nav_msgs::msg::Path>("/plan",20,std::bind(&rclcomm::path_callback,this,std::placeholders::_1),sub1_obt);
+    _local_path_sub=node->create_subscription<nav_msgs::msg::Path>("/local_plan",20,std::bind(&rclcomm::local_path_callback,this,std::placeholders::_1),sub1_obt);
     m_tf_buffer=std::make_unique<tf2_ros::Buffer>(node->get_clock());
     m_transform_listener=std::make_shared<tf2_ros::TransformListener>(*m_tf_buffer);
 }
@@ -104,6 +105,32 @@ void rclcomm::path_callback(const nav_msgs::msg::Path::SharedPtr msg){
 //        qDebug()<<"x:"<<x<<" y:"<<y<<" trans:"<<point.x()<<" "<<point.y();
     }
     emit emitUpdatePath(emit_points);
+}
+void rclcomm::local_path_callback(const nav_msgs::msg::Path::SharedPtr msg){
+    try {
+//        geometry_msgs::msg::TransformStamped laser_transform =  m_tf_buffer->lookupTransform("map","base_scan",tf2::TimePointZero);
+        geometry_msgs::msg::PointStamped point_map_frame;
+        geometry_msgs::msg::PointStamped point_odom_frame;
+        QPolygonF emit_points;
+        for(int i=0;i<msg->poses.size();i++){
+            double x = msg->poses.at(i).pose.position.x;
+            double y = msg->poses.at(i).pose.position.y;
+            point_odom_frame.point.x=x;
+            point_odom_frame.point.y=y;
+            point_odom_frame.header.frame_id = msg->header.frame_id;
+            m_tf_buffer->transform(point_odom_frame,point_map_frame,"map");
+            QPointF point ;
+            point.setX(point_map_frame.point.x);
+            point.setY(point_map_frame.point.y);
+            point = transWordPoint2Scene(point);
+            emit_points.push_back(point);
+    //        qDebug()<<"x:"<<x<<" y:"<<y<<" trans:"<<point.x()<<" "<<point.y();
+        }
+        emit emitUpdateLocalPath(emit_points);
+    }  catch (tf2::TransformException &ex) {
+        qDebug()<<"local path transform error:"<<ex.what();
+    }
+
 }
 void rclcomm::laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg){
 //   qDebug()<<"订阅到激光话题";

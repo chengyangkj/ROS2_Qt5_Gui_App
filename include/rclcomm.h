@@ -32,6 +32,7 @@ private:
 
     void laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     void path_callback(const nav_msgs::msg::Path::SharedPtr msg);
+    void local_path_callback(const nav_msgs::msg::Path::SharedPtr msg);
     QImage rotateMapWithY(QImage map);
     void getRobotPose();
 public slots:
@@ -47,6 +48,7 @@ private:
     rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr m_globalCostMapSub;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr _laser_sub;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr _path_sub;
+    rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr _local_path_sub;
     std::unique_ptr<tf2_ros::Buffer> m_tf_buffer;
     std::shared_ptr<tf2_ros::TransformListener> m_transform_listener;
     std::shared_ptr<rclcpp::Node> node;
@@ -64,6 +66,7 @@ signals:
     void emitUpdateRobotPose(RobotPose pose);
     void emitUpdateLaserPoint(QPolygonF points);
     void emitUpdatePath(QPolygonF points);
+    void emitUpdateLocalPath(QPolygonF points);
 };
 
 #endif // RCLCOMM_H

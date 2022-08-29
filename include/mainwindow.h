@@ -21,6 +21,9 @@ public slots:
     void onRecvData(QString);
     void updateRobotPose(RobotPose pose);
 private slots:
+    void on_pushButton_7_clicked();
+
+private slots:
     void on_pushButton_6_clicked();
 
 private slots:
