@@ -24,7 +24,7 @@ public:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 public slots:
       void updateMap(QImage img);
-      void updateLocalCostMap(QImage img);
+      void updateLocalCostMap(QImage img,RobotPose pose);
       void updateRobotPose(RobotPose pose);
       void updateLaserPoints(QPolygonF points);
       void updatePath(QPolygonF points);

@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     //ui中的graphicsView添加场景
     ui->graphicsView->setScene(m_qGraphicScene);
     connect(commNode,SIGNAL(emitUpdateMap(QImage)),m_roboItem,SLOT(updateMap(QImage)));
-    connect(commNode, SIGNAL(emitUpdateLocalCostMap(QImage)), m_roboItem,SLOT(updateLocalCostMap(QImage)));
+    connect(commNode, SIGNAL(emitUpdateLocalCostMap(QImage,RobotPose)), m_roboItem,SLOT(updateLocalCostMap(QImage,RobotPose)));
     connect(commNode, SIGNAL(emitUpdateGlobalCostMap(QImage)), m_roboItem,SLOT(updateGlobalCostMap(QImage)));
     connect(commNode, SIGNAL(emitUpdateRobotPose(RobotPose)), this,SLOT(updateRobotPose(RobotPose)));
     connect(commNode,SIGNAL(emitUpdateLaserPoint(QPolygonF)),m_roboItem,SLOT(updateLaserPoints(QPolygonF)));

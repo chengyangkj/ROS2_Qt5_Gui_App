@@ -61,7 +61,7 @@ private:
 signals:
     void emitTopicData(QString);
     void emitUpdateMap(QImage img);
-    void emitUpdateLocalCostMap(QImage img);
+    void emitUpdateLocalCostMap(QImage img,RobotPose pose);
     void emitUpdateGlobalCostMap(QImage img);
     void emitUpdateRobotPose(RobotPose pose);
     void emitUpdateLaserPoint(QPolygonF points);
