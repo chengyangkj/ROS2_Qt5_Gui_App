@@ -91,7 +91,7 @@ void rclcomm::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg) {
   state.x = (double)msg->pose.pose.position.x;
   state.y = (double)msg->pose.pose.position.y;
 
-  geometry_msgs::msg::Quaternion msg_quat = msg->pose.pose.orientation;
+  geometry_msgs::msg::QuaternionStamped  msg_quat = msg->pose.pose.orientation;
   //转换类型
   tf2::Quaternion q;
   tf2::fromMsg(msg_quat, q);
@@ -269,7 +269,7 @@ void rclcomm::localCostMapCallback(
   int height = msg->info.height;
   double origin_x = msg->info.origin.position.x;
   double origin_y = msg->info.origin.position.y;
-  tf2::Quaternion q;
+  tgeometry_msgs::msg::QuaternionStamped q;
   tf2::fromMsg(msg->info.origin.orientation, q);
   tf2::Matrix3x3 mat(q);
   double roll, pitch, yaw;
