@@ -11,8 +11,62 @@
 
 ![image.png](./doc/images/main.png)
 
-# eviorment install
+# Environment Install
 
 ```
 sudo apt-get install qtbase5-private-dev
+
+
+
+```
+
+# Build And Run
+
+## 1,Use CMAKE
+
+```
+
+git clone https://github.com/chengyangkj/ROS2_Qt5_Gui_App.git
+cd ROS2_Qt5_Gui_App
+mkdir build
+cd build
+cmake ..
+make
+
+```
+
+run:
+
+```
+./ros_qt5_gui_app
+
+```
+
+## 2,Use colcon Build
+
+create ros2 workspace
+
+```
+
+mkdir -p ~/ros2_ws/src
+
+
+```
+
+clone rep and build
+
+```
+cd ~/ros2_ws/src
+git clone https://github.com/chengyangkj/ROS2_Qt5_Gui_App.git
+cd ~/ros2_ws/
+colcon build
+
+
+```
+
+run:
+
+```
+source ~/ros2_ws/install/setup.bash
+ros2 run ros_qt5_gui_app ros_qt5_gui_app
 ```
